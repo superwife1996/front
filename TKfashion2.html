@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMINO — TikTok Fashion</title>
+    <meta name="description" content="Discover trending fashion. TikTok-style shopping experience with the latest styles and deals.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #fafafa; --bg2: #ffffff; --bg3: #f5f5f5; --bg4: #eeeeee;
+            --text: #1a1a1a; --text2: #555; --text3: #999; --text4: #ccc;
+            --accent: #ff2d55; --accent2: #ff6b81; --accent-bg: #fff0f3;
+            --border: #e8e8e8; --border2: #f0f0f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.06);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.08);
+            --shadow-xl: 0 20px 60px rgba(0,0,0,0.1);
+            --radius: 12px; --radius-sm: 8px; --radius-lg: 16px; --radius-xl: 24px;
+        }
+        ::selection { background: #ff2d55; color: #fff; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bbb; }
+
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        .page-enter { animation: pageIn 0.45s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .page-exit { animation: pageOut 0.25s ease-in forwards; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pageOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-8px); } }
+
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-d1 { transition-delay: 0.08s; } .reveal-d2 { transition-delay: 0.16s; }
+        .reveal-d3 { transition-delay: 0.24s; } .reveal-d4 { transition-delay: 0.32s; }
+
+        .announcement { background: var(--text); color: #fff; font-size: 12px; letter-spacing: 0.05em; overflow: hidden; }
+        .announcement-track { display: flex; animation: marquee 25s linear infinite; }
+        .announcement-track:hover { animation-play-state: paused; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        .header { background: var(--bg2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; transition: box-shadow 0.3s; }
+        .header.scrolled { box-shadow: var(--shadow-md); }
+
+        .search-box { background: var(--bg3); border: 1px solid transparent; border-radius: 100px; transition: all 0.3s; }
+        .search-box:focus-within { border-color: var(--accent); background: var(--bg2); box-shadow: 0 0 0 3px rgba(255,45,85,0.08); }
+        .search-box input { background: transparent; border: none; outline: none; font-size: 14px; width: 100%; color: var(--text); }
+        .search-box input::placeholder { color: var(--text3); }
+
+        .tiktok-card { border-radius: var(--radius); overflow: hidden; background: var(--bg2); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease; cursor: pointer; position: relative; }
+        .tiktok-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .tiktok-card .card-img-wrap { position: relative; overflow: hidden; aspect-ratio: 3/4; }
+        .tiktok-card .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+        .tiktok-card:hover .card-img { transform: scale(1.06); }
+        .tiktok-card .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); opacity: 0; transition: all 0.3s; }
+        .tiktok-card:hover .play-btn { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .tiktok-card .card-actions { position: absolute; right: 10px; bottom: 80px; display: flex; flex-direction: column; gap: 14px; opacity: 0; transform: translateX(10px); transition: all 0.3s; }
+        .tiktok-card:hover .card-actions { opacity: 1; transform: translateX(0); }
+        .card-action-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); border: none; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 11px; }
+        .card-action-btn:hover { background: var(--accent); transform: scale(1.1); }
+        .card-action-btn.liked { background: var(--accent); }
+        .card-action-btn .action-count { display: block; font-size: 9px; margin-top: 1px; font-weight: 500; }
+        .tiktok-card .card-badge { position: absolute; top: 10px; left: 10px; padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; z-index: 2; }
+        .badge-hot { background: var(--accent); color: #fff; }
+        .badge-new { background: var(--text); color: #fff; }
+        .badge-sale { background: #000; color: #fff; }
+        .tiktok-card .card-discount { position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; z-index: 2; }
+        .tiktok-card .card-info { padding: 12px 14px 14px; }
+        .tiktok-card .card-title { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
+        .tiktok-card .card-price { display: flex; align-items: baseline; gap: 6px; }
+        .tiktok-card .price-current { font-size: 16px; font-weight: 700; color: var(--accent); }
+        .tiktok-card .price-original { font-size: 12px; color: var(--text3); text-decoration: line-through; }
+        .tiktok-card .card-sold { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+        .tab-bar { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 4px; }
+        .tab-bar::-webkit-scrollbar { display: none; }
+        .tab-btn { padding: 8px 20px; border-radius: 100px; font-size: 13px; font-weight: 600; white-space: nowrap; border: 1px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer; transition: all 0.25s; }
+        .tab-btn:hover { border-color: var(--text); color: var(--text); }
+        .tab-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+        .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .cart-overlay.open { opacity: 1; pointer-events: auto; }
+        .cart-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 420px; background: var(--bg2); z-index: 201; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); display: flex; flex-direction: column; }
+        .cart-drawer.open { transform: translateX(0); }
+
+        /* ===== QUICK VIEW — CORRECTED ===== */
+        .qv-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
+        .qv-overlay.open { opacity: 1; pointer-events: auto; }
+        .qv-modal {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            background: var(--bg2);
+            border-radius: var(--radius-xl);
+            z-index: 201;
+            width: 92%; max-width: 880px;
+            max-height: 88vh;
+            overflow: hidden;
+            opacity: 0; pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            display: flex; flex-direction: column;
+        }
+        .qv-modal.open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+        .qv-close-btn {
+            position: absolute; top: 14px; right: 14px; z-index: 10;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: var(--text); transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .qv-close-btn:hover { background: var(--bg3); transform: scale(1.08); }
+        .qv-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            flex: 1; overflow: hidden;
+        }
+        .qv-image-side {
+            position: relative; overflow: hidden;
+            background: var(--bg3);
+            min-height: 0;
+        }
+        .qv-image-side img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+        .qv-image-side .qv-disc-badge {
+            position: absolute; top: 12px; left: 12px;
+            background: var(--accent); color: #fff;
+            padding: 4px 12px; border-radius: 100px;
+            font-size: 11px; font-weight: 700;
+        }
+        .qv-info-side {
+            overflow-y: auto; padding: 28px 28px 32px;
+        }
+        @media (min-width: 640px) {
+            .qv-grid { grid-template-columns: 1fr 1fr; }
+            .qv-info-side { padding: 32px; }
+        }
+        @media (min-width: 768px) {
+            .qv-modal { width: 88%; max-width: 860px; }
+            .qv-info-side { padding: 36px; }
+        }
+
+        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+        .toast { background: var(--text); color: #fff; padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); box-shadow: var(--shadow-lg); }
+        .toast.show { transform: translateX(0); }
+
+        .mobile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 150; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .mobile-overlay.open { opacity: 1; pointer-events: auto; }
+        .mobile-drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 300px; background: var(--bg2); z-index: 151; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); overflow-y: auto; }
+        .mobile-drawer.open { transform: translateX(0); }
+
+        .hero-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1s ease; }
+        .hero-slide.active { opacity: 1; }
+
+        .form-input { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; color: var(--text); background: var(--bg2); outline: none; transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit; }
+        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,45,85,0.08); }
+        .form-input::placeholder { color: var(--text4); }
+        .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; background: var(--accent); color: #fff; border: none; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.25s; font-family: inherit; }
+        .btn-primary:hover { background: #e0264c; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,45,85,0.3); }
+        .btn-dark { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; background: var(--text); color: #fff; border: none; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.25s; font-family: inherit; }
+        .btn-dark:hover { background: #333; transform: translateY(-1px); }
+        .btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; background: transparent; color: var(--text); border: 1.5px solid var(--text); border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.25s; font-family: inherit; }
+        .btn-outline:hover { background: var(--text); color: #fff; }
+
+        .otel-panel { position: fixed; bottom: 16px; left: 16px; z-index: 500; background: var(--text); color: #aaa; padding: 12px 16px; border-radius: var(--radius); font-family: 'SF Mono', monospace; font-size: 11px; line-height: 1.6; opacity: 0; transition: opacity 0.3s; cursor: default; max-width: 240px; }
+        .otel-panel:hover { opacity: 1 !important; }
+        .otel-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; display: inline-block; animation: pulseDot 2s ease-in-out infinite; }
+        @keyframes pulseDot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .size-opt { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; background: var(--bg2); color: var(--text2); }
+        .size-opt:hover { border-color: var(--text); color: var(--text); }
+        .size-opt.active { border-color: var(--text); background: var(--text); color: #fff; }
+        .color-opt { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; outline: 2px solid transparent; outline-offset: 2px; }
+        .color-opt:hover { transform: scale(1.15); }
+        .color-opt.active { outline-color: var(--text); }
+
+        @media (max-width: 768px) {
+            .desktop-nav { display: none !important; }
+            .mobile-toggle { display: flex !important; }
+            .hero-title { font-size: 32px !important; }
+            .section-title { font-size: 24px !important; }
+            .qv-modal { width: 96%; max-height: 92vh; border-radius: var(--radius-lg); }
+            .qv-grid { grid-template-columns: 1fr !important; }
+            .qv-image-side { max-height: 45vh; }
+            .qv-info-side { padding: 20px !important; }
+            .qv-close-btn { top: 10px; right: 10px; width: 32px; height: 32px; }
+        }
+        @media (min-width: 769px) {
+            .mobile-toggle { display: none !important; }
+        }
+
+        @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+        .heart-pop { animation: heartPop 0.3s ease; }
+    </style>
+</head>
+<body>
+
+<div class="otel-panel" id="otel-panel" style="opacity:0">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+        <span class="otel-dot"></span>
+        <span style="color:#ddd;font-weight:600;">OTel Traces</span>
+    </div>
+    <div id="otel-lcp">LCP: <span style="color:#22c55e">—</span></div>
+    <div id="otel-fid">FID: <span style="color:#22c55e">—</span></div>
+    <div id="otel-cls">CLS: <span style="color:#22c55e">—</span></div>
+    <div id="otel-nav">Nav: <span style="color:#22c55e">0ms</span></div>
+    <div id="otel-err" style="color:#f87171;">Errors: 0</div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<div class="announcement" style="padding:8px 0;">
+    <div class="announcement-track">
+        <span style="margin:0 32px;white-space:nowrap;">🔥 MEGA SALE — Up to 70% Off Everything</span>
+        <span style="margin:0 32px;white-space:nowrap;">✈️ Free Worldwide Shipping on Orders $50+</span>
+        <span style="margin:0 32px;white-space:nowrap;">⏰ Flash Sale Ends in 23:59:59</span>
+        <span style="margin:0 32px;white-space:nowrap;">🎁 New Users Get Extra 15% Off — Code: NEW15</span>
+        <span style="margin:0 32px;white-space:nowrap;">🔥 MEGA SALE — Up to 70% Off Everything</span>
+        <span style="margin:0 32px;white-space:nowrap;">✈️ Free Worldwide Shipping on Orders $50+</span>
+        <span style="margin:0 32px;white-space:nowrap;">⏰ Flash Sale Ends in 23:59:59</span>
+        <span style="margin:0 32px;white-space:nowrap;">🎁 New Users Get Extra 15% Off — Code: NEW15</span>
+    </div>
+</div>
+
+<header class="header" id="header">
+    <div style="max-width:1400px;margin:0 auto;padding:0 24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;height:64px;">
+            <div style="display:flex;align-items:center;gap:32px;">
+                <button class="mobile-toggle" onclick="toggleMobile()" style="background:none;border:none;cursor:pointer;color:var(--text);display:none;align-items:center;justify-content:center;">
+                    <span class="iconify" data-icon="mdi:menu" data-width="24"></span>
+                </button>
+                <a href="#" onclick="nav('home');return false;" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+                    <span style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.02em;">UMINO</span>
+                    <span style="font-size:9px;font-weight:700;background:var(--accent);color:#fff;padding:2px 6px;border-radius:4px;letter-spacing:0.05em;">TIKTOK</span>
+                </a>
+                <nav class="desktop-nav" style="display:flex;align-items:center;gap:6px;">
+                    <a href="#" onclick="nav('home');return false;" style="padding:8px 16px;font-size:13px;font-weight:600;color:var(--text);text-decoration:none;border-radius:100px;transition:all 0.2s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">Home</a>
+                    <a href="#" onclick="nav('shop');return false;" style="padding:8px 16px;font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;border-radius:100px;transition:all 0.2s;" onmouseover="this.style.background='var(--bg3)';this.style.color='var(--text)'" onmouseout="this.style.background='transparent';this.style.color='var(--text2)'">Shop</a>
+                    <a href="#" onclick="nav('collections');return false;" style="padding:8px 16px;font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;border-radius:100px;transition:all 0.2s;" onmouseover="this.style.background='var(--bg3)';this.style.color='var(--text)'" onmouseout="this.style.background='transparent';this.style.color='var(--text2)'">Collections</a>
+                    <a href="#" style="padding:8px 16px;font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;border-radius:100px;transition:all 0.2s;" onmouseover="this.style.background='var(--bg3)';this.style.color='var(--text)'" onmouseout="this.style.background='transparent';this.style.color='var(--text2)'">Sale</a>
+                </nav>
+            </div>
+            <div class="search-box" style="flex:1;max-width:480px;margin:0 32px;display:flex;align-items:center;padding:0 16px;height:40px;">
+                <span class="iconify" data-icon="mdi:magnify" data-width="18" style="color:var(--text3);flex-shrink:0;"></span>
+                <input type="text" placeholder="Search TikTok fashion trends..." id="search-input" oninput="handleSearch(this.value)" style="padding:0 10px;">
+                <kbd style="font-size:10px;color:var(--text4);background:var(--bg3);padding:2px 6px;border-radius:4px;border:1px solid var(--border);white-space:nowrap;">⌘K</kbd>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button onclick="toggleSearch()" style="width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all 0.2s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+                    <span class="iconify" data-icon="mdi:magnify" data-width="20"></span>
+                </button>
+                <button style="width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all 0.2s;position:relative;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+                    <span class="iconify" data-icon="mdi:heart-outline" data-width="20"></span>
+                    <span id="wish-badge" style="display:none;position:absolute;top:4px;right:4px;width:16px;height:16px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:50%;align-items:center;justify-content:center;">0</span>
+                </button>
+                <button onclick="toggleCart()" style="width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all 0.2s;position:relative;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+                    <span class="iconify" data-icon="mdi:shopping-outline" data-width="20"></span>
+                    <span id="cart-badge" style="display:none;position:absolute;top:4px;right:4px;width:16px;height:16px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:50%;align-items:center;justify-content:center;">0</span>
+                </button>
+                <button style="width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all 0.2s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+                    <span class="iconify" data-icon="mdi:account-outline" data-width="20"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="search-dropdown" style="display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-xl);z-index:110;max-height:400px;overflow-y:auto;"></div>
+</header>
+
+<div class="mobile-overlay" id="mobile-overlay" onclick="toggleMobile()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+    <div style="padding:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
+            <span style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;">UMINO</span>
+            <button onclick="toggleMobile()" style="background:none;border:none;cursor:pointer;"><span class="iconify" data-icon="mdi:close" data-width="24" style="color:var(--text)"></span></button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+            <a href="#" onclick="nav('home');toggleMobile();return false;" style="padding:12px 0;font-size:15px;font-weight:600;color:var(--text);text-decoration:none;border-bottom:1px solid var(--border2);">Home</a>
+            <a href="#" onclick="nav('shop');toggleMobile();return false;" style="padding:12px 0;font-size:15px;font-weight:600;color:var(--text2);text-decoration:none;border-bottom:1px solid var(--border2);">Shop All</a>
+            <a href="#" onclick="nav('collections');toggleMobile();return false;" style="padding:12px 0;font-size:15px;font-weight:600;color:var(--text2);text-decoration:none;border-bottom:1px solid var(--border2);">Collections</a>
+            <a href="#" style="padding:12px 0;font-size:15px;font-weight:600;color:var(--accent);text-decoration:none;border-bottom:1px solid var(--border2);">Sale 🔥</a>
+            <a href="#" style="padding:12px 0;font-size:15px;font-weight:600;color:var(--text2);text-decoration:none;border-bottom:1px solid var(--border2);">About Us</a>
+            <a href="#" style="padding:12px 0;font-size:15px;font-weight:600;color:var(--text2);text-decoration:none;border-bottom:1px solid var(--border2);">Contact</a>
+        </div>
+    </div>
+</div>
+
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+    <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <div>
+            <h3 style="font-size:18px;font-weight:700;">Shopping Bag</h3>
+            <p style="font-size:12px;color:var(--text3);margin-top:2px;" id="cart-count-label">0 items</p>
+        </div>
+        <button onclick="toggleCart()" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);">
+            <span class="iconify" data-icon="mdi:close" data-width="18"></span>
+        </button>
+    </div>
+    <div id="cart-items" style="flex:1;overflow-y:auto;padding:16px 24px;">
+        <div id="cart-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px 0;">
+            <span class="iconify" data-icon="mdi:shopping-outline" data-width="64" style="color:var(--text4);margin-bottom:16px;"></span>
+            <p style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px;">Your bag is empty</p>
+            <p style="font-size:13px;color:var(--text3);margin-bottom:24px;">Discover trending styles on TikTok</p>
+            <button onclick="toggleCart();nav('shop');" class="btn-dark" style="font-size:13px;padding:10px 24px;">Start Shopping</button>
+        </div>
+        <div id="cart-list" style="display:none;"></div>
+    </div>
+    <div id="cart-footer" style="display:none;padding:20px 24px;border-top:1px solid var(--border);background:var(--bg3);">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:13px;color:var(--text2);">Subtotal</span>
+            <span id="cart-subtotal" style="font-size:14px;font-weight:700;">$0.00</span>
+        </div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:16px;">Shipping & taxes calculated at checkout</p>
+        <button onclick="goCheckout()" class="btn-primary" style="width:100%;padding:14px;">Checkout — <span id="cart-total-btn">$0.00</span></button>
+        <button onclick="toggleCart()" style="width:100%;padding:10px;margin-top:8px;background:none;border:none;cursor:pointer;font-size:13px;color:var(--text2);font-family:inherit;font-weight:500;">Continue Shopping</button>
+    </div>
+</div>
+
+<!-- ===== QUICK VIEW: close button is OUTSIDE the scrollable content ===== -->
+<div class="qv-overlay" id="qv-overlay" onclick="closeQV()"></div>
+<div class="qv-modal" id="qv-modal">
+    <button class="qv-close-btn" onclick="closeQV()" aria-label="Close">
+        <span class="iconify" data-icon="mdi:close" data-width="18"></span>
+    </button>
+    <div class="qv-grid" id="qv-content"></div>
+</div>
+
+<!-- ==================== PAGES ==================== -->
+<main id="app">
+
+<div id="page-home" class="page-section active page-enter">
+    <section style="position:relative;height:520px;overflow:hidden;background:var(--bg3);">
+        <div class="hero-slide active" style="background:linear-gradient(135deg,#fce4ec 0%,#f8bbd0 50%,#f48fb1 100%);">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;">
+                <div style="max-width:1400px;margin:0 auto;padding:0 24px;width:100%;display:flex;align-items:center;justify-content:space-between;">
+                    <div style="max-width:500px;">
+                        <span style="display:inline-block;padding:4px 14px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;border-radius:100px;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">TikTok Viral 🔥</span>
+                        <h1 class="hero-title" style="font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:700;line-height:1.05;margin-bottom:16px;letter-spacing:-0.02em;">Summer<br>Collection<br>2025</h1>
+                        <p style="font-size:15px;color:var(--text2);margin-bottom:28px;line-height:1.6;">The trends everyone's wearing. Curated from TikTok's top fashion creators.</p>
+                        <div style="display:flex;gap:12px;">
+                            <button onclick="nav('shop')" class="btn-primary">Shop Now <span class="iconify" data-icon="mdi:arrow-right" data-width="18"></span></button>
+                            <button onclick="nav('collections')" class="btn-outline" style="border-color:var(--text);">View Lookbook</button>
+                        </div>
+                    </div>
+                    <div style="width:380px;height:460px;border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-xl);display:none;" id="hero-img-desktop">
+                        <img src="https://picsum.photos/seed/umino-hero1/760/920.jpg" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-slide" style="background:linear-gradient(135deg,#e8eaf6 0%,#c5cae9 50%,#9fa8da 100%);">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;">
+                <div style="max-width:1400px;margin:0 auto;padding:0 24px;width:100%;display:flex;align-items:center;justify-content:space-between;">
+                    <div style="max-width:500px;">
+                        <span style="display:inline-block;padding:4px 14px;background:var(--text);color:#fff;font-size:11px;font-weight:700;border-radius:100px;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">New Arrivals</span>
+                        <h1 class="hero-title" style="font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:700;line-height:1.05;margin-bottom:16px;letter-spacing:-0.02em;">Streetwear<br>Essentials</h1>
+                        <p style="font-size:15px;color:var(--text2);margin-bottom:28px;line-height:1.6;">Oversized fits, bold graphics, and the pieces your feed can't stop posting.</p>
+                        <div style="display:flex;gap:12px;">
+                            <button onclick="nav('shop')" class="btn-dark">Explore <span class="iconify" data-icon="mdi:arrow-right" data-width="18"></span></button>
+                        </div>
+                    </div>
+                    <div style="width:380px;height:460px;border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-xl);display:none;" id="hero-img-desktop2">
+                        <img src="https://picsum.photos/seed/umino-hero2/760/920.jpg" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5;">
+            <button onclick="goSlide(0)" class="slide-dot active" style="width:24px;height:4px;border-radius:2px;border:none;cursor:pointer;transition:all 0.3s;"></button>
+            <button onclick="goSlide(1)" class="slide-dot" style="width:24px;height:4px;border-radius:2px;border:none;cursor:pointer;transition:all 0.3s;"></button>
+        </div>
+    </section>
+
+    <section style="max-width:1400px;margin:0 auto;padding:48px 24px;">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;" class="reveal">
+            <div>
+                <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">🔥 Trending Now</p>
+                <h2 class="section-title" style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;letter-spacing:-0.02em;">TikTok's Top Picks</h2>
+            </div>
+            <a href="#" onclick="nav('shop');return false;" style="font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">View All <span class="iconify" data-icon="mdi:arrow-right" data-width="16"></span></a>
+        </div>
+        <div id="trending-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"></div>
+        <div id="trending-grid-lg" style="display:none;grid-template-columns:repeat(4,1fr);gap:16px;"></div>
+    </section>
+
+    <section style="max-width:1400px;margin:0 auto;padding:0 24px 48px;">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;" class="reveal">
+            <div onclick="nav('shop')" style="position:relative;border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;aspect-ratio:16/9;">
+                <img src="https://picsum.photos/seed/umino-cat1/800/450.jpg" style="width:100%;height:100%;object-fit:cover;transition:transform 0.8s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6),transparent);"></div>
+                <div style="position:absolute;bottom:20px;left:20px;"><p style="color:#fff;font-size:20px;font-weight:700;">Women</p><p style="color:rgba(255,255,255,0.7);font-size:12px;">234 styles</p></div>
+            </div>
+            <div onclick="nav('shop')" style="position:relative;border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;aspect-ratio:16/9;">
+                <img src="https://picsum.photos/seed/umino-cat2/800/450.jpg" style="width:100%;height:100%;object-fit:cover;transition:transform 0.8s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6),transparent);"></div>
+                <div style="position:absolute;bottom:20px;left:20px;"><p style="color:#fff;font-size:20px;font-weight:700;">Men</p><p style="color:rgba(255,255,255,0.7);font-size:12px;">189 styles</p></div>
+            </div>
+            <div onclick="nav('shop')" style="position:relative;border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;aspect-ratio:16/9;">
+                <img src="https://picsum.photos/seed/umino-cat3/800/450.jpg" style="width:100%;height:100%;object-fit:cover;transition:transform 0.8s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6),transparent);"></div>
+                <div style="position:absolute;bottom:20px;left:20px;"><p style="color:#fff;font-size:20px;font-weight:700;">Accessories</p><p style="color:rgba(255,255,255,0.7);font-size:12px;">156 styles</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section style="background:var(--text);padding:48px 0;">
+        <div style="max-width:1400px;margin:0 auto;padding:0 24px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;" class="reveal">
+                <div style="display:flex;align-items:center;gap:16px;">
+                    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:#fff;letter-spacing:-0.02em;">⚡ Flash Sale</h2>
+                    <div style="display:flex;gap:6px;" id="countdown">
+                        <span class="cd-block" style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:6px;font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;" data-h="23">23</span>
+                        <span style="color:#666;font-size:14px;font-weight:700;line-height:32px;">:</span>
+                        <span class="cd-block" style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:6px;font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;" data-m="59">59</span>
+                        <span style="color:#666;font-size:14px;font-weight:700;line-height:32px;">:</span>
+                        <span class="cd-block" style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:6px;font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;" data-s="59">59</span>
+                    </div>
+                </div>
+                <a href="#" onclick="nav('shop');return false;" style="font-size:13px;font-weight:600;color:#888;text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">See All <span class="iconify" data-icon="mdi:arrow-right" data-width="16"></span></a>
+            </div>
+            <div id="flash-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"></div>
+            <div id="flash-grid-lg" style="display:none;grid-template-columns:repeat(5,1fr);gap:16px;"></div>
+        </div>
+    </section>
+
+    <section style="max-width:1400px;margin:0 auto;padding:48px 24px;">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;" class="reveal">
+            <div>
+                <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">✨ Just Dropped</p>
+                <h2 class="section-title" style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;letter-spacing:-0.02em;">New Arrivals</h2>
+            </div>
+        </div>
+        <div id="new-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"></div>
+        <div id="new-grid-lg" style="display:none;grid-template-columns:repeat(4,1fr);gap:16px;"></div>
+    </section>
+
+    <section style="padding:48px 0;">
+        <div style="text-align:center;margin-bottom:32px;" class="reveal">
+            <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">@umino.fashion</p>
+            <h2 class="section-title" style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;letter-spacing:-0.02em;">Follow the Trend</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;max-width:1400px;margin:0 auto;padding:0 24px;" class="reveal">
+            <div style="aspect-ratio:9/16;overflow:hidden;position:relative;cursor:pointer;border-radius:var(--radius-sm);">
+                <img src="https://picsum.photos/seed/umino-ig1/450/800.jpg" style="width:100%;height:100%;object-fit:cover;transition:transform 0.6s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                    <span class="iconify" data-icon="ic:baseline-tiktok" data-width="32" style="color:#fff;"></span>
+                </div>
+            </div>
+            <div style="aspect-ratio:9/16;overflow:hidden;position:relative;cursor:pointer;border-radius:var(--radius-sm);">
+                <img src="https://picsum.photos/seed/umino-ig2/450/800.jpg" style="width:100%;height:100%;object-fit:cover;transition:transform 0.6s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                    <span class="iconify" data-icon="ic:baseline-tiktok" data-width="32" style="color:#fff;"></span>
+                </div>
+            </div>
+            <div style="aspect-ratio:9/16;overflow:hidden;position:relative;cursor:pointer;border-radius:var(--radius-sm);">
+                <img src="https://picsum.photos/seed/umino-ig3/450/800.jpg" style="width:100%;height:100%;object-fit:cover;transition:transform 0.6s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                    <span class="iconify" data-icon="ic:baseline-tiktok" data-width="32" style="color:#fff;"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="max-width:1400px;margin:0 auto;padding:0 24px 48px;" class="reveal">
+        <div style="background:var(--bg3);border-radius:var(--radius-xl);padding:48px 32px;text-align:center;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:var(--accent);opacity:0.04;border-radius:50%;"></div>
+            <div style="position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;background:var(--accent);opacity:0.04;border-radius:50%;"></div>
+            <span class="iconify" data-icon="ic:baseline-tiktok" data-width="40" style="color:var(--accent);margin-bottom:12px;"></span>
+            <h2 style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-bottom:8px;letter-spacing:-0.02em;">Join the UMINO Club</h2>
+            <p style="font-size:14px;color:var(--text2);margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto;">Get 15% off your first order + exclusive early access to TikTok viral drops.</p>
+            <form onsubmit="event.preventDefault();showToast('Welcome! Check your email for 15% off 🎉');" style="display:flex;gap:8px;max-width:400px;margin:0 auto;">
+                <input type="email" required placeholder="Your email address" class="form-input" style="flex:1;border-radius:100px;">
+                <button type="submit" class="btn-primary" style="border-radius:100px;white-space:nowrap;">Subscribe</button>
+            </form>
+        </div>
+    </section>
+</div>
+
+<div id="page-shop" class="page-section">
+    <section style="max-width:1400px;margin:0 auto;padding:32px 24px 48px;">
+        <div style="margin-bottom:24px;" class="reveal">
+            <h1 class="section-title" style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;letter-spacing:-0.02em;margin-bottom:16px;">All Products</h1>
+            <div class="tab-bar" id="shop-tabs">
+                <button class="tab-btn active" data-cat="all" onclick="filterShop('all',this)">All</button>
+                <button class="tab-btn" data-cat="women" onclick="filterShop('women',this)">Women</button>
+                <button class="tab-btn" data-cat="men" onclick="filterShop('men',this)">Men</button>
+                <button class="tab-btn" data-cat="accessories" onclick="filterShop('accessories',this)">Accessories</button>
+                <button class="tab-btn" data-cat="shoes" onclick="filterShop('shoes',this)">Shoes</button>
+                <button class="tab-btn" data-cat="sale" onclick="filterShop('sale',this)">Sale 🔥</button>
+            </div>
+        </div>
+        <div id="shop-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;"></div>
+        <div id="shop-grid-lg" style="display:none;grid-template-columns:repeat(5,1fr);gap:16px;"></div>
+        <p id="shop-count" style="text-align:center;font-size:13px;color:var(--text3);margin-top:24px;"></p>
+    </section>
+</div>
+
+<div id="page-collections" class="page-section">
+    <section style="max-width:1400px;margin:0 auto;padding:32px 24px 48px;">
+        <div class="reveal" style="margin-bottom:32px;">
+            <h1 class="section-title" style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;letter-spacing:-0.02em;">Collections</h1>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr;gap:20px;" class="reveal">
+            <div onclick="nav('shop')" style="position:relative;border-radius:var(--radius-xl);overflow:hidden;cursor:pointer;aspect-ratio:21/9;">
+                <img src="https://picsum.photos/seed/umino-col1/1400/600.jpg" style="width:100%;height:100%;object-fit:cover;transition:transform 1s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.7) 0%,transparent 60%);"></div>
+                <div style="position:absolute;bottom:40px;left:40px;">
+                    <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Summer 2025</p>
+                    <p style="font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;color:#fff;letter-spacing:-0.02em;">Coastal Vibes</p>
+                    <p style="color:rgba(255,255,255,0.6);font-size:13px;margin-top:4px;">48 pieces</p>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <div onclick="nav('shop')" style="position:relative;border-radius:var(--radius-xl);overflow:hidden;cursor:pointer;aspect-ratio:4/5;">
+                    <img src="https://picsum.photos/seed/umino-col2/700/875.jpg" style="width:100%;height:100%;object-fit:cover;transition:transform 1s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent 60%);"></div>
+                    <div style="position:absolute;bottom:24px;left:24px;">
+                        <p style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff;">Minimalist Edit</p>
+                        <p style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:2px;">32 pieces</p>
+                    </div>
+                </div>
+                <div onclick="nav('shop')" style="position:relative;border-radius:var(--radius-xl);overflow:hidden;cursor:pointer;aspect-ratio:4/5;">
+                    <img src="https://picsum.photos/seed/umino-col3/700/875.jpg" style="width:100%;height:100%;object-fit:cover;transition:transform 1s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent 60%);"></div>
+                    <div style="position:absolute;bottom:24px;left:24px;">
+                        <p style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff;">Streetwear Drop</p>
+                        <p style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:2px;">56 pieces</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="page-checkout" class="page-section">
+    <section style="max-width:1100px;margin:0 auto;padding:32px 24px 64px;">
+        <button onclick="nav('home')" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:4px;margin-bottom:24px;font-family:inherit;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">
+            <span class="iconify" data-icon="mdi:arrow-left" data-width="16"></span> Back to Shopping
+        </button>
+        <h1 class="section-title" style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-bottom:32px;">Checkout</h1>
+        <div style="display:grid;grid-template-columns:1fr;gap:32px;">
+            <div style="display:flex;flex-direction:column;gap:24px;" id="checkout-forms">
+                <div style="background:var(--bg3);border-radius:var(--radius-lg);padding:24px;">
+                    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><span class="iconify" data-icon="mdi:email-outline" data-width="18" style="color:var(--accent);"></span> Contact</h3>
+                    <input type="email" placeholder="Email address" class="form-input">
+                </div>
+                <div style="background:var(--bg3);border-radius:var(--radius-lg);padding:24px;">
+                    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><span class="iconify" data-icon="mdi:truck-delivery-outline" data-width="18" style="color:var(--accent);"></span> Shipping</h3>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div><label class="form-label">First Name</label><input type="text" class="form-input" placeholder="John"></div>
+                        <div><label class="form-label">Last Name</label><input type="text" class="form-input" placeholder="Doe"></div>
+                    </div>
+                    <div style="margin-top:12px;"><label class="form-label">Address</label><input type="text" class="form-input" placeholder="123 Fashion St"></div>
+                    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-top:12px;">
+                        <div><label class="form-label">City</label><input type="text" class="form-input" placeholder="New York"></div>
+                        <div><label class="form-label">State</label><input type="text" class="form-input" placeholder="NY"></div>
+                        <div><label class="form-label">ZIP</label><input type="text" class="form-input" placeholder="10001"></div>
+                    </div>
+                </div>
+                <div style="background:var(--bg3);border-radius:var(--radius-lg);padding:24px;">
+                    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><span class="iconify" data-icon="mdi:credit-card-outline" data-width="18" style="color:var(--accent);"></span> Payment</h3>
+                    <input type="text" placeholder="Card number" class="form-input" style="font-family:'Space Grotesk',monospace;letter-spacing:0.05em;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+                        <input type="text" placeholder="MM / YY" class="form-input" style="font-family:'Space Grotesk',monospace;">
+                        <input type="text" placeholder="CVC" class="form-input" style="font-family:'Space Grotesk',monospace;">
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;color:var(--text3);">
+                        <span class="iconify" data-icon="mdi:lock" data-width="12"></span> Secured with 256-bit SSL · ISO 27001 compliant
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="background:var(--bg3);border-radius:var(--radius-lg);padding:24px;position:sticky;top:80px;">
+                    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Order Summary</h3>
+                    <div id="checkout-items" style="max-height:240px;overflow-y:auto;margin-bottom:16px;"></div>
+                    <div style="border-top:1px solid var(--border);padding-top:12px;">
+                        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--text2);">Subtotal</span><span id="co-subtotal">$0</span></div>
+                        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--text2);">Shipping</span><span id="co-shipping" style="color:#22c55e;">Free</span></div>
+                        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:12px;"><span style="color:var(--text2);">Tax</span><span id="co-tax">$0</span></div>
+                        <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;">
+                            <span style="font-weight:700;">Total</span>
+                            <span id="co-total" style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;">$0</span>
+                        </div>
+                    </div>
+                    <button onclick="placeOrder()" class="btn-primary" style="width:100%;margin-top:16px;padding:14px;">
+                        <span class="iconify" data-icon="mdi:lock" data-width="16"></span> Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="page-confirmation" class="page-section">
+    <section style="max-width:560px;margin:0 auto;padding:80px 24px;text-align:center;">
+        <div style="width:72px;height:72px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+            <span class="iconify" data-icon="mdi:check-circle" data-width="40" style="color:#22c55e;"></span>
+        </div>
+        <h1 style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;margin-bottom:8px;">Order Confirmed! 🎉</h1>
+        <p style="color:var(--text2);margin-bottom:4px;">Thank you for shopping with UMINO.</p>
+        <p style="color:var(--text3);font-size:13px;margin-bottom:32px;">Order #UMN-<span id="order-num">000000</span></p>
+        <div style="background:var(--bg3);border-radius:var(--radius-lg);padding:20px;margin-bottom:32px;">
+            <p style="font-size:12px;color:var(--text3);margin-bottom:4px;">Estimated Delivery</p>
+            <p style="font-size:18px;font-weight:700;" id="delivery-date">—</p>
+        </div>
+        <button onclick="nav('home')" class="btn-primary">Continue Shopping</button>
+    </section>
+</div>
+
+</main>
+
+<footer style="background:var(--text);color:#fff;padding:48px 0 24px;">
+    <div style="max-width:1400px;margin:0 auto;padding:0 24px;">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px;">
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+                    <span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;">UMINO</span>
+                    <span style="font-size:8px;font-weight:700;background:var(--accent);color:#fff;padding:2px 5px;border-radius:3px;">TIKTOK</span>
+                </div>
+                <p style="font-size:13px;color:#888;line-height:1.7;max-width:300px;">Discover trending fashion from TikTok's top creators. Curated styles, viral drops, and unbeatable prices.</p>
+                <div style="display:flex;gap:10px;margin-top:20px;">
+                    <a href="#" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#888;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#888'"><span class="iconify" data-icon="mdi:instagram" data-width="16"></span></a>
+                    <a href="#" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#888;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#888'"><span class="iconify" data-icon="ic:baseline-tiktok" data-width="16"></span></a>
+                    <a href="#" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#888;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--accent)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#888'"><span class="iconify" data-icon="mdi:youtube" data-width="16"></span></a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;color:#aaa;">Shop</h4>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <a href="#" onclick="nav('shop');return false;" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">All Products</a>
+                    <a href="#" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">Women</a>
+                    <a href="#" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">Men</a>
+                    <a href="#" style="font-size:13px;color:var(--accent);text-decoration:none;font-weight:600;">Sale 🔥</a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;color:#aaa;">Help</h4>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <a href="#" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">FAQ</a>
+                    <a href="#" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">Shipping</a>
+                    <a href="#" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">Returns</a>
+                    <a href="#" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">Contact</a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;color:#aaa;">Legal</h4>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <a href="#" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">Privacy</a>
+                    <a href="#" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">Terms</a>
+                    <a href="#" style="font-size:13px;color:#888;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">Cookies</a>
+                </div>
+            </div>
+        </div>
+        <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <p style="font-size:12px;color:#666;">© 2025 UMINO. All rights reserved.</p>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span class="iconify" data-icon="mdi:credit-card-outline" data-width="20" style="color:#555;"></span>
+                <span class="iconify" data-icon="mdi:apple" data-width="18" style="color:#555;"></span>
+                <span class="iconify" data-icon="mdi:google" data-width="16" style="color:#555;"></span>
+                <span style="font-size:10px;color:#555;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;">PayPal</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+const PRODUCTS = [
+    {id:1,name:"Oversized Linen Blazer",price:89,orig:149,cat:"women",tag:"hot",img:"umino-p1",likes:2847,sold:"2.3k",sizes:["XS","S","M","L","XL"],colors:["#1a1a1a","#d4a574","#8b7355"]},
+    {id:2,name:"Cropped Cargo Pants",price:65,orig:null,cat:"women",tag:"new",img:"umino-p2",likes:1523,sold:"1.8k",sizes:["XS","S","M","L"],colors:["#556b2f","#1a1a1a","#8b8682"]},
+    {id:3,name:"Y2K Mesh Top",price:35,orig:59,cat:"women",tag:"sale",img:"umino-p3",likes:4210,sold:"5.1k",sizes:["XS","S","M","L","XL"],colors:["#1a1a1a","#fff","#ff69b4"]},
+    {id:4,name:"Minimalist Tote Bag",price:45,orig:null,cat:"accessories",tag:"new",img:"umino-p4",likes:987,sold:"890",sizes:["One Size"],colors:["#1a1a1a","#d4a574","#fff"]},
+    {id:5,name:"Relaxed Fit Denim Jacket",price:95,orig:145,cat:"men",tag:"hot",img:"umino-p5",likes:3102,sold:"3.4k",sizes:["S","M","L","XL","XXL"],colors:["#4a6fa5","#1a1a1a","#8b8682"]},
+    {id:6,name:"Platform Chunky Sneakers",price:79,orig:120,cat:"shoes",tag:"sale",img:"umino-p6",likes:5678,sold:"7.2k",sizes:["36","37","38","39","40","41","42"],colors:["#fff","#1a1a1a","#f5f0e8"]},
+    {id:7,name:"Silk Slip Dress",price:110,orig:null,cat:"women",tag:"hot",img:"umino-p7",likes:3890,sold:"2.9k",sizes:["XS","S","M","L"],colors:["#1a1a1a","#c9a96e","#8b0000"]},
+    {id:8,name:"Graphic Print Hoodie",price:55,orig:null,cat:"men",tag:"new",img:"umino-p8",likes:2100,sold:"1.5k",sizes:["S","M","L","XL","XXL"],colors:["#1a1a1a","#4a4a4a","#8b0000"]},
+    {id:9,name:"Layered Gold Necklace Set",price:28,orig:45,cat:"accessories",tag:"sale",img:"umino-p9",likes:6732,sold:"9.8k",sizes:["One Size"],colors:["#d4a574","#c0c0c0"]},
+    {id:10,name:"High Waist Wide Leg Jeans",price:72,orig:null,cat:"women",tag:"hot",img:"umino-p10",likes:4567,sold:"4.2k",sizes:["24","25","26","27","28","29","30"],colors:["#4a6fa5","#1a1a1a","#f5f0e8"]},
+    {id:11,name:"Oversized Graphic Tee",price:32,orig:null,cat:"men",tag:"new",img:"umino-p11",likes:1980,sold:"2.1k",sizes:["S","M","L","XL","XXL"],colors:["#fff","#1a1a1a","#8b8682"]},
+    {id:12,name:"Strappy Block Heels",price:68,orig:99,cat:"shoes",tag:"sale",img:"umino-p12",likes:1345,sold:"1.1k",sizes:["36","37","38","39","40"],colors:["#1a1a1a","#c9a96e","#ff0000"]},
+    {id:13,name:"Ribbed Knit Crop Top",price:29,orig:null,cat:"women",tag:"new",img:"umino-p13",likes:7234,sold:"8.5k",sizes:["XS","S","M","L"],colors:["#fff","#1a1a1a","#ff69b4","#d4a574"]},
+    {id:14,name:"Canvas Belt Bag",price:38,orig:null,cat:"accessories",tag:"new",img:"umino-p14",likes:890,sold:"650",sizes:["One Size"],colors:["#556b2f","#1a1a1a","#8b7355"]},
+    {id:15,name:"Slim Fit Tailored Trousers",price:85,orig:130,cat:"men",tag:"sale",img:"umino-p15",likes:1678,sold:"1.3k",sizes:["28","30","32","34","36"],colors:["#1a1a1a","#4a4a4a","#8b8682"]},
+    {id:16,name:"Square Toe Ankle Boots",price:92,orig:null,cat:"shoes",tag:"hot",img:"umino-p16",likes:2345,sold:"1.9k",sizes:["36","37","38","39","40","41"],colors:["#1a1a1a","#8b7355","#fff"]},
+    {id:17,name:"Butterfly Print Midi Skirt",price:48,orig:null,cat:"women",tag:"new",img:"umino-p17",likes:1567,sold:"1.2k",sizes:["XS","S","M","L"],colors:["#fff","#1a1a1a","#4682b4"]},
+    {id:18,name:"Crossbody Chain Bag",price:42,orig:65,cat:"accessories",tag:"sale",img:"umino-p18",likes:3456,sold:"4.0k",sizes:["One Size"],colors:["#1a1a1a","#c0c0c0","#c9a96e"]},
+    {id:19,name:"Distressed Dad Cap",price:22,orig:null,cat:"accessories",tag:"new",img:"umino-p19",likes:4120,sold:"5.5k",sizes:["One Size"],colors:["#1a1a1a","#fff","#556b2f","#8b0000"]},
+    {id:20,name:"Puffer Vest - Quilted",price:78,orig:120,cat:"men",tag:"sale",img:"umino-p20",likes:2890,sold:"2.6k",sizes:["S","M","L","XL"],colors:["#1a1a1a","#4a6fa5","#8b0000"]},
+];
+
+let cart=JSON.parse(localStorage.getItem('umino_cart')||'[]');
+let likes=JSON.parse(localStorage.getItem('umino_likes')||'[]');
+let page='home';let errCount=0;const traces=[];
+function saveCart(){localStorage.setItem('umino_cart',JSON.stringify(cart));}
+function saveLikes(){localStorage.setItem('umino_likes',JSON.stringify(likes));}
+
+function otel(n,t){const s=performance.now();return{end(){const d=performance.now()-s;traces.push({n,t,d:d.toFixed(1)});updateOTel();console.log(`[OTel] ${t}:${n}=${d.toFixed(1)}ms`);}};}
+function updateOTel(){
+    const l=traces.find(t=>t.n==='LCP'),f=traces.find(t=>t.n==='FID'),c=traces.find(t=>t.n==='CLS'),nv=traces.filter(t=>t.t==='spa').pop();
+    document.getElementById('otel-lcp').innerHTML=l?`LCP: <span style="color:#22c55e">${l.d}ms</span>`:'LCP: <span style="color:#22c55e">—</span>';
+    document.getElementById('otel-fid').innerHTML=f?`FID: <span style="color:#22c55e">${f.d}ms</span>`:'FID: <span style="color:#22c55e">—</span>';
+    document.getElementById('otel-cls').innerHTML=c?`CLS: <span style="color:#22c55e">${c.d}</span>`:'CLS: <span style="color:#22c55e">—</span>';
+    document.getElementById('otel-nav').innerHTML=nv?`Nav: <span style="color:#22c55e">${nv.d}ms</span>`:'Nav: <span style="color:#22c55e">0ms</span>';
+    document.getElementById('otel-err').textContent=`Errors: ${errCount}`;
+}
+if('PerformanceObserver' in window){
+    try{new PerformanceObserver(l=>{for(const e of l.getEntries()){traces.push({n:'LCP',t:'vitals',d:e.startTime.toFixed(1)});updateOTel();}}).observe({type:'largest-contentful-paint',buffered:true});}catch(e){}
+    try{new PerformanceObserver(l=>{for(const e of l.getEntries()){traces.push({n:'FID',t:'vitals',d:e.duration.toFixed(1)});updateOTel();}}).observe({type:'first-input',buffered:true});}catch(e){}
+    try{new PerformanceObserver(l=>{const c=l.getEntries();if(c.length)traces.push({n:'CLS',t:'vitals',d:c.reduce((a,b)=>a+b.value,0).toFixed(3)});updateOTel();}).observe({type:'layout-shift',buffered:true});}catch(e){}
+}
+window.addEventListener('error',()=>{errCount++;updateOTel();});
+
+function cardHTML(p,hasVideo=false){
+    const badge=p.tag==='hot'?'<span class="card-badge badge-hot">🔥 Hot</span>':p.tag==='new'?'<span class="card-badge badge-new">New</span>':p.tag==='sale'?'<span class="card-badge badge-sale">Sale</span>':'';
+    const disc=p.orig?`<span class="card-discount">-${Math.round((1-p.price/p.orig)*100)}%</span>`:'';
+    const origPrice=p.orig?`<span class="price-original">$${p.orig}</span>`:'';
+    const isLiked=likes.includes(p.id);
+    return `<div class="tiktok-card reveal" onclick="openQV(${p.id})">
+        <div class="card-img-wrap">
+            ${badge}${disc}
+            <img class="card-img" src="https://picsum.photos/seed/${p.img}/600/800.jpg" alt="${p.name}" loading="lazy">
+            ${hasVideo?'<div class="play-btn"><div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.95);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.2);"><span class="iconify" data-icon="mdi:play" data-width="24" style="color:#1a1a1a;margin-left:2px;"></span></div></div>':''}
+            <div class="card-actions">
+                <button class="card-action-btn ${isLiked?'liked':''}" onclick="event.stopPropagation();toggleLike(${p.id},this);">
+                    <span class="iconify" data-icon="${isLiked?'mdi:heart':'mdi:heart-outline'}" data-width="16"></span>
+                    <span class="action-count">${formatNum(p.likes+(isLiked?1:0))}</span>
+                </button>
+                <button class="card-action-btn" onclick="event.stopPropagation();quickAdd(${p.id});">
+                    <span class="iconify" data-icon="mdi:shopping-outline" data-width="16"></span>
+                    <span class="action-count">Add</span>
+                </button>
+                <button class="card-action-btn" onclick="event.stopPropagation();showToast('Link copied!');">
+                    <span class="iconify" data-icon="mdi:share-outline" data-width="16"></span>
+                    <span class="action-count">Share</span>
+                </button>
+            </div>
+        </div>
+        <div class="card-info">
+            <div class="card-title">${p.name}</div>
+            <div class="card-price"><span class="price-current">$${p.price}</span>${origPrice}</div>
+            <div class="card-sold">${p.sold} sold</div>
+        </div>
+    </div>`;
+}
+function formatNum(n){return n>=1000?(n/1000).toFixed(1)+'k':n.toString();}
+
+function renderGrid(container,products,hasVideo=false){
+    container.innerHTML=products.map(p=>cardHTML(p,hasVideo)).join('');
+    container.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+}
+
+function renderHome(){
+    renderGrid(document.getElementById('trending-grid'),PRODUCTS.filter(p=>p.tag==='hot').slice(0,4),true);
+    renderGrid(document.getElementById('trending-grid-lg'),PRODUCTS.filter(p=>p.tag==='hot').slice(0,4),true);
+    renderGrid(document.getElementById('flash-grid'),PRODUCTS.filter(p=>p.tag==='sale').slice(0,5),false);
+    renderGrid(document.getElementById('flash-grid-lg'),PRODUCTS.filter(p=>p.tag==='sale').slice(0,5),false);
+    renderGrid(document.getElementById('new-grid'),PRODUCTS.filter(p=>p.tag==='new').slice(0,4),false);
+    renderGrid(document.getElementById('new-grid-lg'),PRODUCTS.filter(p=>p.tag==='new').slice(0,4),false);
+    handleResize();
+}
+
+let shopFilter='all';
+function renderShop(){
+    let filtered=shopFilter==='all'?PRODUCTS:shopFilter==='sale'?PRODUCTS.filter(p=>p.tag==='sale'):PRODUCTS.filter(p=>p.cat===shopFilter);
+    renderGrid(document.getElementById('shop-grid'),filtered,true);
+    renderGrid(document.getElementById('shop-grid-lg'),filtered,true);
+    document.getElementById('shop-count').textContent=`${filtered.length} products`;
+    handleResize();
+}
+function filterShop(cat,btn){
+    shopFilter=cat;
+    document.querySelectorAll('#shop-tabs .tab-btn').forEach(b=>{b.classList.remove('active');b.style.background='var(--bg2)';b.style.color='var(--text2)';b.style.borderColor='var(--border)';});
+    btn.classList.add('active');
+    renderShop();
+}
+
+function nav(to){
+    if(to===page)return;
+    const span=otel(`nav:${page}->${to}`,'spa');
+    const isCSR=['checkout','confirmation'].includes(to);
+    console.log(`[Hybrid] ${isCSR?'CSR':'SSR→CSR'} → ${to}`);
+    const old=document.getElementById('page-'+page);
+    const next=document.getElementById('page-'+to);
+    if(!old||!next){span.end();return;}
+    old.classList.remove('page-enter');old.classList.add('page-exit');
+    setTimeout(()=>{
+        old.classList.remove('active','page-exit');old.style.display='none';
+        next.style.display='block';next.classList.remove('page-enter');next.classList.add('active','page-enter');
+        if(to==='shop')renderShop();if(to==='home')renderHome();if(to==='checkout')renderCheckout();
+        next.querySelectorAll('.reveal').forEach(el=>{el.classList.remove('visible');obs.observe(el);});
+        page=to;window.scrollTo({top:0,behavior:'smooth'});span.end();
+    },250);
+}
+
+function toggleLike(id,btn){
+    const idx=likes.indexOf(id);if(idx>-1)likes.splice(idx,1);else likes.push(id);saveLikes();
+    const isLiked=likes.includes(id);btn.classList.toggle('liked',isLiked);
+    btn.querySelector('.iconify').setAttribute('data-icon',isLiked?'mdi:heart':'mdi:heart-outline');
+    btn.classList.add('heart-pop');setTimeout(()=>btn.classList.remove('heart-pop'),300);
+    const p=PRODUCTS.find(x=>x.id===id);if(p)btn.querySelector('.action-count').textContent=formatNum(p.likes+(isLiked?1:0));
+    const wb=document.getElementById('wish-badge');if(likes.length>0){wb.style.display='flex';wb.textContent=likes.length;}else{wb.style.display='none';}
+}
+
+function quickAdd(id){addToCart(id);}
+function addToCart(id,size=null,qty=1){
+    const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
+    const sz=size||p.sizes[0];const ex=cart.find(c=>c.id===id&&c.size===sz);
+    if(ex)ex.qty+=qty;else cart.push({id,name:p.name,price:p.price,img:p.img,size:sz,qty});
+    saveCart();updateCartUI();showToast(`${p.name} added to bag`);otel(`cart:add:${p.name}`,'cart').end();
+}
+function removeFromCart(i){cart.splice(i,1);saveCart();updateCartUI();if(page==='checkout')renderCheckout();}
+function updateQty(i,d){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);saveCart();updateCartUI();if(page==='checkout')renderCheckout();}
+function cartTotal(){return cart.reduce((s,c)=>s+c.price*c.qty,0);}
+function cartCount(){return cart.reduce((s,c)=>s+c.qty,0);}
+function updateCartUI(){
+    const n=cartCount();const badge=document.getElementById('cart-badge');const label=document.getElementById('cart-count-label');
+    badge.textContent=n;label.textContent=`${n} item${n!==1?'s':''}`;badge.style.display=n>0?'flex':'none';
+    const empty=document.getElementById('cart-empty'),list=document.getElementById('cart-list'),footer=document.getElementById('cart-footer');
+    if(cart.length===0){empty.style.display='flex';list.style.display='none';footer.style.display='none';}
+    else{
+        empty.style.display='none';list.style.display='block';footer.style.display='block';
+        list.innerHTML=cart.map((c,i)=>`<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border2);">
+            <div style="width:72px;height:90px;border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0;background:var(--bg3);"><img src="https://picsum.photos/seed/${c.img}/144/180.jpg" style="width:100%;height:100%;object-fit:cover;"></div>
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;justify-content:space-between;align-items:start;"><p style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px;">${c.name}</p><button onclick="removeFromCart(${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);flex-shrink:0;padding:0;"><span class="iconify" data-icon="mdi:close" data-width="14"></span></button></div>
+                <p style="font-size:11px;color:var(--text3);margin-top:2px;">Size: ${c.size}</p>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                    <div style="display:flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+                        <button onclick="updateQty(${i},-1)" style="width:28px;height:28px;border:none;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;">−</button>
+                        <span style="width:32px;text-align:center;font-size:12px;font-weight:600;">${c.qty}</span>
+                        <button onclick="updateQty(${i},1)" style="width:28px;height:28px;border:none;background:var(--bg3);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;">+</button>
+                    </div>
+                    <span style="font-size:14px;font-weight:700;">$${(c.price*c.qty).toFixed(2)}</span>
+                </div>
+            </div>
+        </div>`).join('');
+        document.getElementById('cart-subtotal').textContent=`$${cartTotal().toFixed(2)}`;
+        document.getElementById('cart-total-btn').textContent=`$${cartTotal().toFixed(2)}`;
+    }
+}
+
+function goCheckout(){if(!cart.length)return;toggleCart();nav('checkout');}
+function renderCheckout(){
+    document.getElementById('checkout-items').innerHTML=cart.map(c=>`<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border2);">
+        <div style="width:48px;height:60px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--bg3);"><img src="https://picsum.photos/seed/${c.img}/96/120.jpg" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div style="flex:1;min-width:0;"><p style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.name}</p><p style="font-size:11px;color:var(--text3);">${c.size} × ${c.qty}</p></div>
+        <span style="font-size:13px;font-weight:600;">$${(c.price*c.qty).toFixed(2)}</span>
+    </div>`).join('');
+    const sub=cartTotal(),ship=sub>=50?0:5.99,tax=sub*0.08,total=sub+ship+tax;
+    document.getElementById('co-subtotal').textContent=`$${sub.toFixed(2)}`;
+    document.getElementById('co-shipping').textContent=ship===0?'Free':`$${ship.toFixed(2)}`;
+    document.getElementById('co-shipping').style.color=ship===0?'#22c55e':'var(--text)';
+    document.getElementById('co-tax').textContent=`$${tax.toFixed(2)}`;
+    document.getElementById('co-total').textContent=`$${total.toFixed(2)}`;
+}
+function placeOrder(){
+    if(!cart.length)return;
+    document.getElementById('order-num').textContent=Math.floor(Math.random()*900000+100000);
+    const d=new Date();d.setDate(d.getDate()+4);
+    document.getElementById('delivery-date').textContent=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    cart=[];saveCart();updateCartUI();otel('checkout:placeOrder','conversion').end();nav('confirmation');
+}
+
+/* ===== QUICK VIEW — FIXED LAYOUT ===== */
+function openQV(id){
+    const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
+    const isLiked=likes.includes(id);
+    const colors=p.colors.map((c,i)=>`<button class="color-opt ${i===0?'active':''}" style="background:${c};" onclick="this.parentElement.querySelectorAll('.color-opt').forEach(b=>b.classList.remove('active'));this.classList.add('active');"></button>`).join('');
+    const sizes=p.sizes.map((s,i)=>`<button class="size-opt ${i===0?'active':''}" onclick="this.parentElement.querySelectorAll('.size-opt').forEach(b=>b.classList.remove('active'));this.classList.add('active');">${s}</button>`).join('');
+    const origPrice=p.orig?`<span style="font-size:14px;color:var(--text3);text-decoration:line-through;margin-left:8px;">$${p.orig}</span>`:'';
+    const discTag=p.orig?`<span style="background:var(--accent-bg);color:var(--accent);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;margin-left:8px;">-${Math.round((1-p.price/p.orig)*100)}% OFF</span>`:'';
+    const tagLabel=p.tag==='hot'?'🔥 Hot':p.tag==='new'?'✨ New':p.tag==='sale'?'🏷️ Sale':'';
+
+    /* Only populate the inner grid — close button stays outside in the modal */
+    document.getElementById('qv-content').innerHTML=`
+        <!-- Image side: fills left column, constrained by modal max-height -->
+        <div class="qv-image-side">
+            <img src="https://picsum.photos/seed/${p.img}/800/1000.jpg" alt="${p.name}">
+            ${p.orig?`<span class="qv-disc-badge">-${Math.round((1-p.price/p.orig)*100)}%</span>`:''}
+        </div>
+        <!-- Info side: independently scrollable -->
+        <div class="qv-info-side">
+            <span style="font-size:11px;color:var(--text3);font-weight:600;">${tagLabel}</span>
+            <h2 style="font-size:20px;font-weight:700;margin:8px 0 10px;line-height:1.3;">${p.name}</h2>
+            <div style="display:flex;align-items:baseline;margin-bottom:6px;">
+                <span style="font-size:24px;font-weight:700;color:var(--accent);">$${p.price}</span>${origPrice}${discTag}
+            </div>
+            <p style="font-size:12px;color:var(--text3);margin-bottom:24px;">${p.sold} sold · ${formatNum(p.likes)} likes</p>
+
+            <div style="margin-bottom:20px;">
+                <p style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Color</p>
+                <div style="display:flex;gap:8px;">${colors}</div>
+            </div>
+
+            <div style="margin-bottom:24px;">
+                <p style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Size</p>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">${sizes}</div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-bottom:20px;">
+                <button onclick="addToCart(${p.id});closeQV();" class="btn-primary" style="flex:1;padding:14px;border-radius:var(--radius-sm);">
+                    <span class="iconify" data-icon="mdi:shopping-outline" data-width="18"></span> Add to Bag — $${p.price}
+                </button>
+                <button id="qv-like-btn" onclick="toggleLikeQV(${p.id},this)" style="width:50px;height:50px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:${isLiked?'var(--accent)':'var(--text2)'};transition:all 0.2s;flex-shrink:0;">
+                    <span class="iconify" data-icon="${isLiked?'mdi:heart':'mdi:heart-outline'}" data-width="20"></span>
+                </button>
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:16px;padding-top:16px;border-top:1px solid var(--border2);">
+                <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;"><span class="iconify" data-icon="mdi:truck-delivery-outline" data-width="14"></span> Free shipping $50+</span>
+                <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;"><span class="iconify" data-icon="mdi:refresh" data-width="14"></span> 30-day returns</span>
+                <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;"><span class="iconify" data-icon="mdi:shield-check-outline" data-width="14"></span> Secure checkout</span>
+            </div>
+        </div>`;
+
+    document.getElementById('qv-overlay').classList.add('open');
+    document.getElementById('qv-modal').classList.add('open');
+    document.body.style.overflow='hidden';
+}
+
+/* Separate toggle for QV like button (different parent structure) */
+function toggleLikeQV(id,btn){
+    const idx=likes.indexOf(id);if(idx>-1)likes.splice(idx,1);else likes.push(id);saveLikes();
+    const isLiked=likes.includes(id);
+    btn.style.color=isLiked?'var(--accent)':'var(--text2)';
+    btn.querySelector('.iconify').setAttribute('data-icon',isLiked?'mdi:heart':'mdi:heart-outline');
+    /* Sync wishlist badge */
+    const wb=document.getElementById('wish-badge');if(likes.length>0){wb.style.display='flex';wb.textContent=likes.length;}else{wb.style.display='none';}
+}
+
+function closeQV(){
+    document.getElementById('qv-overlay').classList.remove('open');
+    document.getElementById('qv-modal').classList.remove('open');
+    document.body.style.overflow='';
+}
+
+function toggleCart(){
+    const o=document.getElementById('cart-overlay'),d=document.getElementById('cart-drawer');
+    const open=d.classList.contains('open');
+    if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow='';}
+    else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden';}
+}
+function toggleMobile(){
+    const o=document.getElementById('mobile-overlay'),d=document.getElementById('mobile-drawer');
+    const open=d.classList.contains('open');
+    if(open){o.classList.remove('open');d.classList.remove('open');document.body.style.overflow='';}
+    else{o.classList.add('open');d.classList.add('open');document.body.style.overflow='hidden';}
+}
+function toggleSearch(){
+    const dd=document.getElementById('search-dropdown');
+    dd.style.display=dd.style.display==='block'?'none':'block';
+    if(dd.style.display==='block')document.getElementById('search-input').focus();
+}
+function handleSearch(q){
+    const dd=document.getElementById('search-dropdown');
+    if(q.length<2){dd.innerHTML='';dd.style.display=q.length?'block':'none';return;}
+    dd.style.display='block';
+    const f=PRODUCTS.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())).slice(0,5);
+    dd.innerHTML=f.length?f.map(p=>`<button onclick="document.getElementById('search-dropdown').style.display='none';document.getElementById('search-input').value='';openQV(${p.id})" style="display:flex;align-items:center;gap:12px;padding:10px 16px;border:none;background:none;cursor:pointer;width:100%;text-align:left;transition:background 0.15s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
+        <div style="width:36px;height:45px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--bg3);"><img src="https://picsum.photos/seed/${p.img}/72/90.jpg" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div><p style="font-size:13px;font-weight:500;">${p.name}</p><p style="font-size:12px;color:var(--accent);font-weight:600;">$${p.price}</p></div>
+    </button>`).join(''):'<p style="padding:20px;text-align:center;font-size:13px;color:var(--text3);">No results found</p>';
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.search-box')&&!e.target.closest('#search-dropdown'))document.getElementById('search-dropdown').style.display='none';});
+
+function showToast(msg){
+    const c=document.getElementById('toast-container');const t=document.createElement('div');t.className='toast';
+    t.innerHTML=`<span class="iconify" data-icon="mdi:check-circle" data-width="18" style="color:#22c55e;flex-shrink:0;"></span>${msg}`;
+    c.appendChild(t);requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+    setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},2500);
+}
+
+let slideIdx=0;
+function goSlide(i){
+    slideIdx=i;
+    document.querySelectorAll('.hero-slide').forEach((s,j)=>s.classList.toggle('active',j===i));
+    document.querySelectorAll('.slide-dot').forEach((d,j)=>{d.style.background=j===i?'var(--accent)':'rgba(255,255,255,0.3)';d.style.width=j===i?'32px':'24px';});
+}
+setInterval(()=>goSlide((slideIdx+1)%2),5000);
+
+function updateCountdown(){
+    const now=new Date();const end=new Date(now);end.setHours(23,59,59,999);const diff=end-now;
+    const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    document.querySelectorAll('.cd-block').forEach(b=>{
+        if(b.dataset.h!==undefined)b.textContent=String(h).padStart(2,'0');
+        if(b.dataset.m!==undefined)b.textContent=String(m).padStart(2,'0');
+        if(b.dataset.s!==undefined)b.textContent=String(s).padStart(2,'0');
+    });
+}
+setInterval(updateCountdown,1000);updateCountdown();
+
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
+window.addEventListener('scroll',()=>{document.getElementById('header').classList.toggle('scrolled',window.scrollY>10);});
+
+function handleResize(){
+    const w=window.innerWidth();const lg=w>=1024;
+    ['trending-grid','flash-grid','new-grid','shop-grid'].forEach(id=>{
+        document.getElementById(id).style.display=lg?'none':'grid';
+        document.getElementById(id+'-lg').style.display=lg?'grid':'none';
+    });
+    if(w>=769){document.getElementById('hero-img-desktop').style.display='block';document.getElementById('hero-img-desktop2').style.display='block';}
+}
+window.addEventListener('resize',handleResize);
+
+document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){closeQV();document.getElementById('search-dropdown').style.display='none';if(document.getElementById('cart-drawer').classList.contains('open'))toggleCart();if(document.getElementById('mobile-drawer').classList.contains('open'))toggleMobile();}
+    if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();toggleSearch();}
+});
+document.getElementById('qv-overlay').addEventListener('click',closeQV);
+
+document.addEventListener('DOMContentLoaded',()=>{
+    const init=otel('SSR:init','render');
+    goSlide(0);renderHome();updateCartUI();
+    if(likes.length>0){const wb=document.getElementById('wish-badge');wb.style.display='flex';wb.textContent=likes.length;}
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+    init.end();
+    const hydrate=otel('CSR:hydrate','hydrate');
+    setTimeout(()=>{hydrate.end();console.log('[Hybrid] SSR→CSR hydration complete.');},50);
+});
+</script>
+</body>
+</html>
